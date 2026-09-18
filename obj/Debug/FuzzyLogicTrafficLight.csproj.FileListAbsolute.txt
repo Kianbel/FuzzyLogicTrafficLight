@@ -1,0 +1,10 @@
+C:\Users\Kirk\Desktop\intelligentSystem\FuzzyLogicTrafficLight\FuzzyLogicTrafficLight\bin\Debug\FuzzyLogicTrafficLight.exe.config
+C:\Users\Kirk\Desktop\intelligentSystem\FuzzyLogicTrafficLight\FuzzyLogicTrafficLight\bin\Debug\FuzzyLogicTrafficLight.exe
+C:\Users\Kirk\Desktop\intelligentSystem\FuzzyLogicTrafficLight\FuzzyLogicTrafficLight\bin\Debug\FuzzyLogicTrafficLight.pdb
+C:\Users\Kirk\Desktop\intelligentSystem\FuzzyLogicTrafficLight\FuzzyLogicTrafficLight\obj\Debug\FuzzyLogicTrafficLight.csproj.AssemblyReference.cache
+C:\Users\Kirk\Desktop\intelligentSystem\FuzzyLogicTrafficLight\FuzzyLogicTrafficLight\obj\Debug\FuzzyLogicTrafficLight.Form1.resources
+C:\Users\Kirk\Desktop\intelligentSystem\FuzzyLogicTrafficLight\FuzzyLogicTrafficLight\obj\Debug\FuzzyLogicTrafficLight.Properties.Resources.resources
+C:\Users\Kirk\Desktop\intelligentSystem\FuzzyLogicTrafficLight\FuzzyLogicTrafficLight\obj\Debug\FuzzyLogicTrafficLight.csproj.GenerateResource.cache
+C:\Users\Kirk\Desktop\intelligentSystem\FuzzyLogicTrafficLight\FuzzyLogicTrafficLight\obj\Debug\FuzzyLogicTrafficLight.csproj.CoreCompileInputs.cache
+C:\Users\Kirk\Desktop\intelligentSystem\FuzzyLogicTrafficLight\FuzzyLogicTrafficLight\obj\Debug\FuzzyLogicTrafficLight.exe
+C:\Users\Kirk\Desktop\intelligentSystem\FuzzyLogicTrafficLight\FuzzyLogicTrafficLight\obj\Debug\FuzzyLogicTrafficLight.pdb
