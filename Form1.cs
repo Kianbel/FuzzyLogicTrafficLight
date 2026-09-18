@@ -238,7 +238,7 @@ namespace FuzzyLogicTrafficLight
             
 
             double timeExtension = l1.GetTimeExtension(l1WaitingTime, l1Car); // seconds
-            double standardTrafficLightTime = 10; // seconds
+            double standardTrafficLightTime = 15; // seconds
 
             int timeCounter = 0;
             Random random = new Random();
@@ -250,7 +250,7 @@ namespace FuzzyLogicTrafficLight
             int carHeight = 35;
             int carSpawnMargin = 50;
 
-            int spawnCarChance = 3;
+            int spawnCarChance = 4;
 
             int yellowLightDelayMs = 300;
 
@@ -407,16 +407,16 @@ namespace FuzzyLogicTrafficLight
     {
         public double GetTimeExtension(double waitingTime, int carQueue)
         {
-            double briefWaitingTime = TriangularMembership(waitingTime, -15, 0, 15);
-            double moderateWaitingTime = TriangularMembership(waitingTime, 10, 20, 30);
-            double prolongedWaitingTime = TriangularMembership(waitingTime, 25, 37.5, 50);
+            double briefWaitingTime = TriangularMembership(waitingTime, 20, 35, 50); // 
+            double moderateWaitingTime = TriangularMembership(waitingTime, 40, 60, 80);
+            double prolongedWaitingTime = TriangularMembership(waitingTime, 75, 97.5, 120);
 
-            double shortCarQueue = TriangularMembership(carQueue, -6, 0, 6);
-            double mediumCarQueue = TriangularMembership(carQueue, 4, 9.5, 15);
-            double longCarQueue = TriangularMembership(carQueue, 12, 18.5, 25);
+            double shortCarQueue = TriangularMembership(carQueue, 10, 15, 20);
+            double mediumCarQueue = TriangularMembership(carQueue, 18, 24, 30);
+            double longCarQueue = TriangularMembership(carQueue, 25, 35, 45);
 
             double highRule = Math.Max(prolongedWaitingTime, longCarQueue);
-            double moderateRule = Math.Min(moderateWaitingTime, mediumCarQueue);
+            double moderateRule = (moderateWaitingTime + mediumCarQueue)/2;
             double lowRule = Math.Min(briefWaitingTime, shortCarQueue);
 
             double cShort = 10.0;
