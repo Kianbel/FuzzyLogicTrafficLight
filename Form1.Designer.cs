@@ -30,10 +30,12 @@
         {
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.button1 = new System.Windows.Forms.Button();
-            this.l1TimeLabel = new System.Windows.Forms.Label();
+            this.l1GoTimeLabel = new System.Windows.Forms.Label();
             this.l1CarsWaitingLabel = new System.Windows.Forms.Label();
-            this.l2TimeLabel = new System.Windows.Forms.Label();
-            this.l2CarWaitingLabel = new System.Windows.Forms.Label();
+            this.l2WaitingTimeLabel = new System.Windows.Forms.Label();
+            this.l2CarsWaitingLabel = new System.Windows.Forms.Label();
+            this.l1WaitingTimeLabel = new System.Windows.Forms.Label();
+            this.l2GoTimeLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -58,17 +60,17 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
-            // l1TimeLabel
+            // l1GoTimeLabel
             // 
-            this.l1TimeLabel.AutoSize = true;
-            this.l1TimeLabel.BackColor = System.Drawing.Color.Green;
-            this.l1TimeLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.l1TimeLabel.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.l1TimeLabel.Location = new System.Drawing.Point(491, 386);
-            this.l1TimeLabel.Name = "l1TimeLabel";
-            this.l1TimeLabel.Size = new System.Drawing.Size(127, 13);
-            this.l1TimeLabel.TabIndex = 2;
-            this.l1TimeLabel.Text = "Waiting/Go time: 10s";
+            this.l1GoTimeLabel.AutoSize = true;
+            this.l1GoTimeLabel.BackColor = System.Drawing.Color.Green;
+            this.l1GoTimeLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.l1GoTimeLabel.ForeColor = System.Drawing.SystemColors.ButtonFace;
+            this.l1GoTimeLabel.Location = new System.Drawing.Point(491, 386);
+            this.l1GoTimeLabel.Name = "l1GoTimeLabel";
+            this.l1GoTimeLabel.Size = new System.Drawing.Size(132, 13);
+            this.l1GoTimeLabel.TabIndex = 2;
+            this.l1GoTimeLabel.Text = "Go Time Remaining: 0";
             // 
             // l1CarsWaitingLabel
             // 
@@ -82,39 +84,65 @@
             this.l1CarsWaitingLabel.TabIndex = 3;
             this.l1CarsWaitingLabel.Text = "Cars waiting: 0";
             // 
-            // l2TimeLabel
+            // l2WaitingTimeLabel
             // 
-            this.l2TimeLabel.AutoSize = true;
-            this.l2TimeLabel.BackColor = System.Drawing.Color.Green;
-            this.l2TimeLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.l2TimeLabel.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.l2TimeLabel.Location = new System.Drawing.Point(174, 188);
-            this.l2TimeLabel.Name = "l2TimeLabel";
-            this.l2TimeLabel.Size = new System.Drawing.Size(127, 13);
-            this.l2TimeLabel.TabIndex = 4;
-            this.l2TimeLabel.Text = "Waiting/Go time: 10s";
+            this.l2WaitingTimeLabel.AutoSize = true;
+            this.l2WaitingTimeLabel.BackColor = System.Drawing.Color.Green;
+            this.l2WaitingTimeLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.l2WaitingTimeLabel.ForeColor = System.Drawing.SystemColors.ButtonFace;
+            this.l2WaitingTimeLabel.Location = new System.Drawing.Point(143, 188);
+            this.l2WaitingTimeLabel.Name = "l2WaitingTimeLabel";
+            this.l2WaitingTimeLabel.Size = new System.Drawing.Size(96, 13);
+            this.l2WaitingTimeLabel.TabIndex = 4;
+            this.l2WaitingTimeLabel.Text = "Waiting Time: 0";
             // 
-            // l2CarWaitingLabel
+            // l2CarsWaitingLabel
             // 
-            this.l2CarWaitingLabel.AutoSize = true;
-            this.l2CarWaitingLabel.BackColor = System.Drawing.Color.Green;
-            this.l2CarWaitingLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.l2CarWaitingLabel.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.l2CarWaitingLabel.Location = new System.Drawing.Point(95, 222);
-            this.l2CarWaitingLabel.Name = "l2CarWaitingLabel";
-            this.l2CarWaitingLabel.Size = new System.Drawing.Size(91, 13);
-            this.l2CarWaitingLabel.TabIndex = 5;
-            this.l2CarWaitingLabel.Text = "Cars waiting: 0";
+            this.l2CarsWaitingLabel.AutoSize = true;
+            this.l2CarsWaitingLabel.BackColor = System.Drawing.Color.Green;
+            this.l2CarsWaitingLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.l2CarsWaitingLabel.ForeColor = System.Drawing.SystemColors.ButtonFace;
+            this.l2CarsWaitingLabel.Location = new System.Drawing.Point(95, 222);
+            this.l2CarsWaitingLabel.Name = "l2CarsWaitingLabel";
+            this.l2CarsWaitingLabel.Size = new System.Drawing.Size(91, 13);
+            this.l2CarsWaitingLabel.TabIndex = 5;
+            this.l2CarsWaitingLabel.Text = "Cars waiting: 0";
+            // 
+            // l1WaitingTimeLabel
+            // 
+            this.l1WaitingTimeLabel.AutoSize = true;
+            this.l1WaitingTimeLabel.BackColor = System.Drawing.Color.Green;
+            this.l1WaitingTimeLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.l1WaitingTimeLabel.ForeColor = System.Drawing.SystemColors.ButtonFace;
+            this.l1WaitingTimeLabel.Location = new System.Drawing.Point(491, 408);
+            this.l1WaitingTimeLabel.Name = "l1WaitingTimeLabel";
+            this.l1WaitingTimeLabel.Size = new System.Drawing.Size(96, 13);
+            this.l1WaitingTimeLabel.TabIndex = 6;
+            this.l1WaitingTimeLabel.Text = "Waiting Time: 0";
+            // 
+            // l2GoTimeLabel
+            // 
+            this.l2GoTimeLabel.AutoSize = true;
+            this.l2GoTimeLabel.BackColor = System.Drawing.Color.Green;
+            this.l2GoTimeLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.l2GoTimeLabel.ForeColor = System.Drawing.SystemColors.ButtonFace;
+            this.l2GoTimeLabel.Location = new System.Drawing.Point(143, 164);
+            this.l2GoTimeLabel.Name = "l2GoTimeLabel";
+            this.l2GoTimeLabel.Size = new System.Drawing.Size(132, 13);
+            this.l2GoTimeLabel.TabIndex = 7;
+            this.l2GoTimeLabel.Text = "Go Time Remaining: 0";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(716, 705);
-            this.Controls.Add(this.l2CarWaitingLabel);
-            this.Controls.Add(this.l2TimeLabel);
+            this.Controls.Add(this.l2GoTimeLabel);
+            this.Controls.Add(this.l1WaitingTimeLabel);
+            this.Controls.Add(this.l2CarsWaitingLabel);
+            this.Controls.Add(this.l2WaitingTimeLabel);
             this.Controls.Add(this.l1CarsWaitingLabel);
-            this.Controls.Add(this.l1TimeLabel);
+            this.Controls.Add(this.l1GoTimeLabel);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.pictureBox1);
             this.Margin = new System.Windows.Forms.Padding(2);
@@ -130,10 +158,12 @@
 
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Label l1TimeLabel;
+        private System.Windows.Forms.Label l1GoTimeLabel;
         private System.Windows.Forms.Label l1CarsWaitingLabel;
-        private System.Windows.Forms.Label l2TimeLabel;
-        private System.Windows.Forms.Label l2CarWaitingLabel;
+        private System.Windows.Forms.Label l2WaitingTimeLabel;
+        private System.Windows.Forms.Label l2CarsWaitingLabel;
+        private System.Windows.Forms.Label l1WaitingTimeLabel;
+        private System.Windows.Forms.Label l2GoTimeLabel;
     }
 }
 

@@ -6,6 +6,13 @@ using System.Windows.Forms;
 
 namespace FuzzyLogicTrafficLight
 {
+
+    // 1. yellow light 
+    // 2. separate go ug waiting time 
+    // 3. inputs for lane 1 
+    // 4. graph sa triangle 
+    // 5. change to mamdani 
+
     public partial class Form1 : Form
     {
         Lane l1 = new Lane();
@@ -32,8 +39,8 @@ namespace FuzzyLogicTrafficLight
             animationTimer.Tick += AnimationTimer_Tick;
             animationTimer.Start();
 
-            l2TimeLabel.Text = "Waiting Time: 0";
-            l1TimeLabel.Text = "Go Remaining Time: ";
+            l2WaitingTimeLabel.Text = "Waiting Time: 0";
+            l1GoTimeLabel.Text = "Go Remaining Time: ";
         }
 
         private void AnimationTimer_Tick(object sender, EventArgs e)
@@ -47,6 +54,10 @@ namespace FuzzyLogicTrafficLight
             float stopLineL2 = width / 2 - roadWidth / 2;
 
             float carSpacing = 15f;
+
+            int l1CarsWaiting = 0;
+            int l2CarsWaiting = 0;
+
 
             // Lane 1 cars
             for (int i = 0; i < carsLane1.Count; i++)
@@ -74,6 +85,8 @@ namespace FuzzyLogicTrafficLight
                         canMove = false;
                     }
                 }
+
+                if (currentCar.Y < stopLineL1) l1CarsWaiting++;
 
                 if (canMove) currentCar.Y -= currentCar.Speed;
             }
@@ -105,11 +118,16 @@ namespace FuzzyLogicTrafficLight
                     }
                 }
 
+                if (currentCar.X + currentCar.Width <= stopLineL2) l2CarsWaiting++;
+
                 if (canMove) currentCar.X += currentCar.Speed;
             }
 
             carsLane1.RemoveAll(car => car.Y < -50);
             carsLane2.RemoveAll(car => car.X > width + 50);
+
+            l1CarsWaitingLabel.Text = $"Cars Waiting: {l1CarsWaiting}";
+            l2CarsWaitingLabel.Text = $"Cars Waiting: {l2CarsWaiting}";
 
             pictureBox1.Invalidate(); // same as refresh
         }
@@ -243,12 +261,12 @@ namespace FuzzyLogicTrafficLight
                 if (l1StartWaitingTime)
                 {
                     l1WaitingTime++;
-                    l1TimeLabel.Text = $"Waiting Time: {l1WaitingTime:F0}";
+                    l1WaitingTimeLabel.Text = $"Waiting Time: {l1WaitingTime:F0}";
                 }
                 if(l2StartWaitingTime)
                 {
                     l2WaitingTime++;
-                    l2TimeLabel.Text = $"Waiting Time: {l2WaitingTime:F0}";
+                    l2WaitingTimeLabel.Text = $"Waiting Time: {l2WaitingTime:F0}";
                 }
 
                 if (l1Running)
@@ -256,8 +274,8 @@ namespace FuzzyLogicTrafficLight
                     if (timeCounter < standardTrafficLightTime + timeExtension)
                     {
                         timeCounter++;
-                        l1TimeLabel.Text = $"Go Time Remaining: {(standardTrafficLightTime + timeExtension - timeCounter):F0}";
-                        // Console.WriteLine("l1Running " + timeCounter);
+                        l1GoTimeLabel.Text = $"Go Time Remaining: {(standardTrafficLightTime + timeExtension - timeCounter):F0}";
+                        l1WaitingTimeLabel.Text = "Waiting Time: 0";
 
                         if (random.Next(10) < spawnCarChance)
                         {
@@ -303,7 +321,8 @@ namespace FuzzyLogicTrafficLight
                         // Console.WriteLine($"l2 running for additional: {timeExtension} (total: {standardTrafficLightTime + timeExtension})");
 
                         SwitchLanesRunning();
-                        l1TimeLabel.Text = "Waiting Time: 0";
+                        l1WaitingTimeLabel.Text = "Waiting Time: 0";
+                        l1GoTimeLabel.Text = "Go Time Remaining: 0";
                     }
                 }
                 else if (l2Running)
@@ -311,7 +330,8 @@ namespace FuzzyLogicTrafficLight
                     if (timeCounter < standardTrafficLightTime + timeExtension)
                     {
                         timeCounter++;
-                        l2TimeLabel.Text = $"Go Time Remaining: {(standardTrafficLightTime + timeExtension - timeCounter):F0}";
+                        l2GoTimeLabel.Text = $"Go Time Remaining: {(standardTrafficLightTime + timeExtension - timeCounter):F0}";
+                        l2WaitingTimeLabel.Text = "Waiting Time: 0";
 
                         // Console.WriteLine("l2Running " + timeCounter);
 
@@ -360,7 +380,8 @@ namespace FuzzyLogicTrafficLight
                         // Console.WriteLine($"l1 running for additional: {timeExtension} (total: {standardTrafficLightTime + timeExtension})");
 
                         SwitchLanesRunning();
-                        l2TimeLabel.Text = "Waiting Time: 0";
+                        l2WaitingTimeLabel.Text = "Waiting Time: 0";
+                        l2GoTimeLabel.Text = "Go Time Remaining: 0";
                     }
                 }
 
