@@ -8,10 +8,8 @@ namespace FuzzyLogicTrafficLight
 {
 
     // 1. yellow light 
-    // 2. separate go ug waiting time 
     // 3. inputs for lane 1 
     // 4. graph sa triangle 
-    // 5. change to mamdani 
 
     public partial class Form1 : Form
     {
