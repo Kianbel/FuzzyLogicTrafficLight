@@ -6,20 +6,22 @@ using System.Windows.Forms;
 
 namespace FuzzyLogicTrafficLight
 {
-
-    // 1. yellow light 
-    // 3. inputs for lane 1 
+    // TODOs
     // 4. graph sa triangle 
 
     public partial class Form1 : Form
     {
         Lane l1 = new Lane();
         Lane l2 = new Lane();
-        bool l1Running = true;
-        bool l2Running = false;
+        bool isRunning = false;
+        bool isL1Running = true;
+        bool isL2Running = false;
 
-        bool l1StartWaitingTime = false;
-        bool l2StartWaitingTime = false;
+        bool isYellowLight = false;
+        int yellowLane = 0; // either 1 = lane1 or 2 = lane2
+
+        bool isL1WaitingTimeStarted = false;
+        bool isL2WaitingTimeStarted = false;
 
         double l1WaitingTime = 0.0;
         double l2WaitingTime = 0.0;
@@ -27,6 +29,13 @@ namespace FuzzyLogicTrafficLight
         List<Car> carsLane1 = new List<Car>();
         List<Car> carsLane2 = new List<Car>();
         Timer animationTimer = new Timer();
+
+        int l1Car = 0;
+        int l2Car = 0;
+
+        int l1CarsWaiting = 0;
+        int l2CarsWaiting = 0;
+        double standardTrafficLightTime = 15; // seconds
 
         public Form1()
         {
@@ -37,8 +46,8 @@ namespace FuzzyLogicTrafficLight
             animationTimer.Tick += AnimationTimer_Tick;
             animationTimer.Start();
 
-            l2WaitingTimeLabel.Text = "Waiting Time: 0";
-            l1GoTimeLabel.Text = "Go Remaining Time: ";
+            SetL2WaitingTimeLabel(0);
+            SetL1GoTimeLabel(0);
         }
 
         private void AnimationTimer_Tick(object sender, EventArgs e)
@@ -53,8 +62,8 @@ namespace FuzzyLogicTrafficLight
 
             float carSpacing = 15f;
 
-            int l1CarsWaiting = 0;
-            int l2CarsWaiting = 0;
+            l1CarsWaiting = 0;
+            l2CarsWaiting = 0;
 
 
             // Lane 1 cars
@@ -64,13 +73,13 @@ namespace FuzzyLogicTrafficLight
                 bool canMove = true; // assume all cars are moving
 
                 // 1. Stop at stop line
-                if (!l1Running && currentCar.Y >= stopLineL1)
+                if (!isL1Running && currentCar.Y >= stopLineL1)
                 {
                     if (currentCar.Y - currentCar.Speed < stopLineL1)
                     {
                         canMove = false;
-                        l1StartWaitingTime = true;
-                        l2StartWaitingTime = false;
+                        isL1WaitingTimeStarted = true;
+                        isL2WaitingTimeStarted = false;
                     }
                 }
 
@@ -84,7 +93,7 @@ namespace FuzzyLogicTrafficLight
                     }
                 }
 
-                if (currentCar.Y < stopLineL1) l1CarsWaiting++;
+                if (currentCar.Y >= stopLineL1) l1CarsWaiting++;
 
                 if (canMove) currentCar.Y -= currentCar.Speed;
             }
@@ -96,13 +105,13 @@ namespace FuzzyLogicTrafficLight
                 bool canMove = true;
 
                 // 1. Stop at stop line
-                if (!l2Running && currentCar.X + currentCar.Width <= stopLineL2)
+                if (!isL2Running && currentCar.X + currentCar.Width <= stopLineL2)
                 {
                     if (currentCar.X + currentCar.Width + currentCar.Speed > stopLineL2)
                     {
                         canMove = false;
-                        l1StartWaitingTime = false;
-                        l2StartWaitingTime = true;
+                        isL1WaitingTimeStarted = false;
+                        isL2WaitingTimeStarted = true;
                     }
                 }
 
@@ -124,8 +133,8 @@ namespace FuzzyLogicTrafficLight
             carsLane1.RemoveAll(car => car.Y < -50);
             carsLane2.RemoveAll(car => car.X > width + 50);
 
-            l1CarsWaitingLabel.Text = $"Cars Waiting: {l1CarsWaiting}";
-            l2CarsWaitingLabel.Text = $"Cars Waiting: {l2CarsWaiting}";
+            Setl1CarsWaitingLabel(l1CarsWaiting);
+            Setl2CarsWaitingLabel(l2CarsWaiting);
 
             pictureBox1.Invalidate(); // same as refresh
         }
@@ -167,32 +176,52 @@ namespace FuzzyLogicTrafficLight
             string redOff = "#450000";
             string greenOn = "#00d126";
             string greenOff = "#003b0b";
+            string yellowOn = "#FFEE00";
+            string yellowOff = "#3d3a00";
 
             string l1Red = "";
             string l1Green = "";
+            string l1Yellow = "";
             string l2Red = "";
             string l2Green = "";
+            string l2Yellow = "";
 
-            if (l1Running)
+            if (isYellowLight)
             {
-                l1Red = redOff;
-                l1Green = greenOn;
-                l2Red = redOn;
-                l2Green = greenOff;
+                if (yellowLane == 1)
+                {
+                    l1Red = redOff; l1Green = greenOff; l1Yellow = yellowOn;
+                    l2Red = redOn; l2Green = greenOff; l2Yellow = yellowOff;
+                }
+                else
+                {
+                    l1Red = redOn; l1Green = greenOff; l1Yellow = yellowOff;
+                    l2Red = redOff; l2Green = greenOff; l2Yellow = yellowOn;
+                }
             }
-            else if (l2Running)
+            else if (isL1Running)
             {
-                l1Red = redOn;
-                l1Green = greenOff;
-                l2Red = redOff;
-                l2Green = greenOn;
+                l1Red = redOff; l1Green = greenOn; l1Yellow = yellowOff;
+                l2Red = redOn; l2Green = greenOff; l2Yellow = yellowOff;
+            }
+            else if (isL2Running)
+            {
+                l1Red = redOn; l1Green = greenOff; l1Yellow = yellowOff;
+                l2Red = redOff; l2Green = greenOn; l2Yellow = yellowOff;
+            }
+            else
+            {
+                l1Red = redOn; l1Green = greenOff; l1Yellow = yellowOff;
+                l2Red = redOn; l2Green = greenOff; l2Yellow = yellowOff;
             }
 
             Brush l1RedColorBrush = new SolidBrush(ColorTranslator.FromHtml(l1Red));
             Brush l1GreenColorBrush = new SolidBrush(ColorTranslator.FromHtml(l1Green));
+            Brush l1YellowColorBrush = new SolidBrush(ColorTranslator.FromHtml(l1Yellow));
+
             Brush l2RedColorBrush = new SolidBrush(ColorTranslator.FromHtml(l2Red));
             Brush l2GreenColorBrush = new SolidBrush(ColorTranslator.FromHtml(l2Green));
-            Brush yellowOffColorBrush = new SolidBrush(ColorTranslator.FromHtml("#3d3a00"));
+            Brush l2YellowColorBrush = new SolidBrush(ColorTranslator.FromHtml(l2Yellow));
 
             int base1X = width / 2 + roadWidth;
             int base1Y = height / 2 + roadWidth;
@@ -200,7 +229,7 @@ namespace FuzzyLogicTrafficLight
             g.FillRectangle(Brushes.Black, base1);
             Rectangle red1 = new Rectangle(base1X + baseMargin, base1Y + baseMargin, lightWidth, lightWidth);
             Rectangle yellow1 = new Rectangle(base1X + baseMargin, base1Y + baseMargin + lightWidth + inbetweenLightPadding, lightWidth, lightWidth);
-            g.FillEllipse(yellowOffColorBrush, yellow1);
+            g.FillEllipse(l1YellowColorBrush, yellow1);
             Rectangle green1 = new Rectangle(base1X + baseMargin, base1Y + baseMargin + lightWidth * 2 + inbetweenLightPadding * 2, lightWidth, lightWidth);
 
             int base2X = width / 2 - pavementWidth - roadWidth / 2 - 10;
@@ -209,7 +238,7 @@ namespace FuzzyLogicTrafficLight
             g.FillRectangle(Brushes.Black, base2);
             Rectangle green2 = new Rectangle(base2X + baseMargin, base2Y + baseMargin, lightWidth, lightWidth);
             Rectangle yellow2 = new Rectangle(base2X + baseMargin + lightWidth + inbetweenLightPadding, base2Y + baseMargin, lightWidth, lightWidth);
-            g.FillEllipse(yellowOffColorBrush, yellow2);
+            g.FillEllipse(l2YellowColorBrush, yellow2);
             Rectangle red2 = new Rectangle(base2X + baseMargin + lightWidth * 2 + inbetweenLightPadding * 2, base2Y + baseMargin, lightWidth, lightWidth);
 
             // Traffic lights on/off colors
@@ -223,22 +252,42 @@ namespace FuzzyLogicTrafficLight
             foreach (Car c in carsLane2) c.Draw(g);
         }
 
-        private void SwitchLanesRunning()
+        private async Task TransitionLanesAsync()
         {
-            l1Running = !l1Running;
-            l2Running = !l2Running;
+            isYellowLight = true;
+            yellowLane = isL1Running ? 1 : 2;
+
+            isL1Running = false;
+            isL2Running = false;
+
+            await Task.Delay(1000);
+
+            if (yellowLane == 1)
+            {
+                isL2Running = true;
+            }
+            else
+            {
+                isL1Running = true;
+            }
+
             l1WaitingTime = 0;
             l2WaitingTime = 0;
+            isYellowLight = false;
         }
+
+        double initialWaitingTime;
+        int initialCarsQueued;
 
         private async void button1_Click(object sender, EventArgs e)
         {
-            int l1Car = 6;
-            int l2Car = 0;
-            
+            startRandomizedCarButton.Enabled = false;
+            startInputButton.Enabled = false;
 
+            l1Car = 6;
+            isL1Running = true;
+            isL2Running = false;
             double timeExtension = l1.GetTimeExtension(l1WaitingTime, l1Car); // seconds
-            double standardTrafficLightTime = 15; // seconds
 
             int timeCounter = 0;
             Random random = new Random();
@@ -252,41 +301,39 @@ namespace FuzzyLogicTrafficLight
 
             int spawnCarChance = 4;
 
-            int yellowLightDelayMs = 300;
-
-            while (true)
+            isRunning = true;
+            while (isRunning)
             {
-                if (l1StartWaitingTime)
+                if (isL1WaitingTimeStarted)
                 {
                     l1WaitingTime++;
-                    l1WaitingTimeLabel.Text = $"Waiting Time: {l1WaitingTime:F0}";
+                    SetL1WaitingTimeLabel(l1WaitingTime);
                 }
-                if(l2StartWaitingTime)
+                if (isL2WaitingTimeStarted)
                 {
                     l2WaitingTime++;
-                    l2WaitingTimeLabel.Text = $"Waiting Time: {l2WaitingTime:F0}";
+                    SetL2WaitingTimeLabel(l2WaitingTime);
                 }
 
-                if (l1Running)
+                if (isL1Running)
                 {
                     if (timeCounter < standardTrafficLightTime + timeExtension)
                     {
                         timeCounter++;
-                        l1GoTimeLabel.Text = $"Go Time Remaining: {(standardTrafficLightTime + timeExtension - timeCounter):F0}";
-                        l1WaitingTimeLabel.Text = "Waiting Time: 0";
+                        SetL1GoTimeLabel(standardTrafficLightTime + timeExtension - timeCounter);
+                        SetL1WaitingTimeLabel(0);
 
                         if (random.Next(10) < spawnCarChance)
                         {
                             l1Car++;
                             carsLane1.Add(new Car
                             {
-                                X = width / 2 + (roadWidth / 4) - carWidth/2,
+                                X = width / 2 + (roadWidth / 4) - carWidth / 2,
                                 Y = height + carSpawnMargin,
                                 Width = carWidth,
                                 Height = carHeight,
                                 Color = Color.Blue
                             });
-                            // Console.WriteLine("l1Car++ : " + l1Car);
                         }
                         if (random.Next(10) < spawnCarChance)
                         {
@@ -294,12 +341,11 @@ namespace FuzzyLogicTrafficLight
                             carsLane2.Add(new Car
                             {
                                 X = -carSpawnMargin,
-                                Y = height / 2 + (roadWidth / 4) - carWidth/2,
+                                Y = height / 2 + (roadWidth / 4) - carWidth / 2,
                                 Width = carHeight,
                                 Height = carWidth,
                                 Color = Color.Red
                             });
-                            // Console.WriteLine("l2Car++ : " + l2Car);
                         }
 
                         if (l1Car > 0)
@@ -309,29 +355,24 @@ namespace FuzzyLogicTrafficLight
                     }
                     else
                     {
-                        // Console.WriteLine("l1 done running");
-                        // Console.WriteLine("l2 has n cars: " + l2Car);
                         timeCounter = 0;
-                        timeExtension = l2.GetTimeExtension(l2WaitingTime, l2Car);
+                        Console.Write("L2: ");
+                        timeExtension = l2.GetTimeExtension(l2WaitingTime, l2CarsWaiting);
 
                         l2WaitingTime = standardTrafficLightTime + timeExtension;
 
-                        // Console.WriteLine($"l2 running for additional: {timeExtension} (total: {standardTrafficLightTime + timeExtension})");
-
-                        SwitchLanesRunning();
-                        l1WaitingTimeLabel.Text = "Waiting Time: 0";
-                        l1GoTimeLabel.Text = "Go Time Remaining: 0";
+                        await TransitionLanesAsync();
+                        SetL1WaitingTimeLabel(0);
+                        SetL1GoTimeLabel(0);
                     }
                 }
-                else if (l2Running)
+                else if (isL2Running)
                 {
                     if (timeCounter < standardTrafficLightTime + timeExtension)
                     {
                         timeCounter++;
-                        l2GoTimeLabel.Text = $"Go Time Remaining: {(standardTrafficLightTime + timeExtension - timeCounter):F0}";
-                        l2WaitingTimeLabel.Text = "Waiting Time: 0";
-
-                        // Console.WriteLine("l2Running " + timeCounter);
+                        SetL2GoTimeLabel(standardTrafficLightTime + timeExtension - timeCounter);
+                        SetL2WaitingTimeLabel(0);
 
                         if (random.Next(10) < spawnCarChance)
                         {
@@ -345,7 +386,6 @@ namespace FuzzyLogicTrafficLight
                                 Height = 35,
                                 Color = Color.Blue
                             });
-                            // Console.WriteLine("l1Car++ : " + l1Car);
                         }
                         if (random.Next(10) < spawnCarChance)
                         {
@@ -353,12 +393,11 @@ namespace FuzzyLogicTrafficLight
                             carsLane2.Add(new Car
                             {
                                 X = -carSpawnMargin,
-                                Y = height / 2 + (roadWidth / 4) - carWidth/2,
+                                Y = height / 2 + (roadWidth / 4) - carWidth / 2,
                                 Width = carHeight,
                                 Height = carWidth,
                                 Color = Color.Red
                             });
-                            // Console.WriteLine("l2Car++ : " + l2Car);
                         }
 
                         if (l2Car > 0)
@@ -368,23 +407,130 @@ namespace FuzzyLogicTrafficLight
                     }
                     else
                     {
-                        // Console.WriteLine("l2 done running");
-                        // Console.WriteLine("l1 has n cars: " + l1Car);
                         timeCounter = 0;
-                        timeExtension = l1.GetTimeExtension(l1WaitingTime, l1Car);
-                        
+                        Console.Write("L1: ");
+                        timeExtension = l1.GetTimeExtension(l1WaitingTime, l1CarsWaiting);
+
                         l1WaitingTime = standardTrafficLightTime + timeExtension;
 
-                        // Console.WriteLine($"l1 running for additional: {timeExtension} (total: {standardTrafficLightTime + timeExtension})");
-
-                        SwitchLanesRunning();
-                        l2WaitingTimeLabel.Text = "Waiting Time: 0";
-                        l2GoTimeLabel.Text = "Go Time Remaining: 0";
+                        await TransitionLanesAsync();
+                        SetL2WaitingTimeLabel(0);
+                        SetL2GoTimeLabel(0);
                     }
                 }
 
                 await Task.Delay(500);
             }
+        }
+
+
+
+        private async void startInputButton_Click(object sender, EventArgs e)
+        {
+            startInputButton.Enabled = false;
+            startRandomizedCarButton.Enabled = false;
+
+            isL1Running = true;
+            isL2Running = false;
+            double timeExtension = l1.GetTimeExtension(initialWaitingTime, initialCarsQueued); // seconds
+
+            int timeCounter = 0;
+
+            isRunning = true;
+            while (isRunning)
+            {
+                if (timeCounter < standardTrafficLightTime + timeExtension)
+                {
+                    timeCounter++;
+                    SetL1GoTimeLabel(standardTrafficLightTime + timeExtension - timeCounter);
+                    SetL1WaitingTimeLabel(0);
+
+                }
+                else break;
+
+                await Task.Delay(500);
+
+            }
+
+        }
+
+        private void setInputButton_Click(object sender, EventArgs e)
+        {
+            isL1Running = false;
+
+            initialWaitingTime = Convert.ToDouble(waitingTimeInput.Value);
+            initialCarsQueued = Convert.ToInt32(carsQueuedInput.Value);
+
+            SetL1WaitingTimeLabel(initialWaitingTime);
+            Setl1CarsWaitingLabel(initialCarsQueued);
+
+            for (int i = 0; i < initialCarsQueued; i++)
+            {
+                int width = pictureBox1.ClientSize.Width;
+                int height = pictureBox1.ClientSize.Height;
+                int roadWidth = 75;
+
+                int carWidth = 20;
+                int carHeight = 35;
+                int carSpawnMargin = 50;
+
+                carsLane1.Add(new Car
+                {
+                    X = width / 2 + (roadWidth / 4) - carWidth / 2,
+                    Y = height + carSpawnMargin,
+                    Width = carWidth,
+                    Height = carHeight,
+                    Color = Color.Blue
+                });
+            }
+        }
+
+        private void stopAllButton_Click(object sender, EventArgs e)
+        {
+            isRunning = false;
+            startRandomizedCarButton.Enabled = true;
+            startInputButton.Enabled = true;
+
+            l1Car = 0;
+            l2Car = 0;
+
+            carsLane1.Clear();
+            carsLane2.Clear();
+
+            l1WaitingTime = 0;
+            l2WaitingTime = 0;
+
+            SetL1WaitingTimeLabel(0);
+            SetL2WaitingTimeLabel(0);
+            SetL1GoTimeLabel(0);
+            SetL2GoTimeLabel(0);
+            Setl1CarsWaitingLabel(0);
+            Setl2CarsWaitingLabel(0);
+        }
+
+        private void SetL1WaitingTimeLabel(double time)
+        {
+            l1WaitingTimeLabel.Text = $"Waiting Time: {time:F2}s";
+        }
+        private void SetL2WaitingTimeLabel(double time)
+        {
+            l2WaitingTimeLabel.Text = $"Waiting Time: {time:F2}s";
+        }
+        private void SetL1GoTimeLabel(double time)
+        {
+            l1GoTimeLabel.Text = $"Go Time Remaining: {time:F2}s";
+        }
+        private void SetL2GoTimeLabel(double time)
+        {
+            l2GoTimeLabel.Text = $"Go Time Remaining: {time:F2}s";
+        }
+        private void Setl1CarsWaitingLabel(int n)
+        {
+            l1CarsWaitingLabel.Text = $"Cars Waiting: {n}";
+        }
+        private void Setl2CarsWaitingLabel(int n)
+        {
+            l2CarsWaitingLabel.Text = $"Cars Waiting: {n}";
         }
     }
 
@@ -407,6 +553,8 @@ namespace FuzzyLogicTrafficLight
     {
         public double GetTimeExtension(double waitingTime, int carQueue)
         {
+            Console.Write($"wait:{waitingTime} | cars:{carQueue} : +");
+
             double briefWaitingTime = TriangularMembership(waitingTime, 20, 35, 50); // 
             double moderateWaitingTime = TriangularMembership(waitingTime, 40, 60, 80);
             double prolongedWaitingTime = TriangularMembership(waitingTime, 75, 97.5, 120);
@@ -416,7 +564,7 @@ namespace FuzzyLogicTrafficLight
             double longCarQueue = TriangularMembership(carQueue, 25, 35, 45);
 
             double highRule = Math.Max(prolongedWaitingTime, longCarQueue);
-            double moderateRule = (moderateWaitingTime + mediumCarQueue)/2;
+            double moderateRule = (moderateWaitingTime + mediumCarQueue) / 2;
             double lowRule = Math.Min(briefWaitingTime, shortCarQueue);
 
             double cShort = 10.0;
@@ -429,6 +577,7 @@ namespace FuzzyLogicTrafficLight
             {
                 centroid = numerator / denominator;
             }
+            Console.Write(centroid + $" {centroid + 15}\n------------------\n");
             return centroid;
         }
 
@@ -443,4 +592,5 @@ namespace FuzzyLogicTrafficLight
             return (c - x) / (c - b);
         }
     }
+
 }
