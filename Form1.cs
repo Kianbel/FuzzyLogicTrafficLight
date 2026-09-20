@@ -299,7 +299,8 @@ namespace FuzzyLogicTrafficLight
             int carHeight = 35;
             int carSpawnMargin = 50;
 
-            int spawnCarChance = 4;
+            int spawnCarChance = 3;
+            int numberOfCarsSpawned;
 
             isRunning = true;
             while (isRunning)
@@ -325,27 +326,35 @@ namespace FuzzyLogicTrafficLight
 
                         if (random.Next(10) < spawnCarChance)
                         {
-                            l1Car++;
-                            carsLane1.Add(new Car
+                            numberOfCarsSpawned = random.Next(2) + 1;
+                            l1Car += numberOfCarsSpawned; //Randomly spawns 1-2 cars
+                            for(int i=0;i<numberOfCarsSpawned; i++)
                             {
-                                X = width / 2 + (roadWidth / 4) - carWidth / 2,
-                                Y = height + carSpawnMargin,
-                                Width = carWidth,
-                                Height = carHeight,
-                                Color = Color.Blue
-                            });
+                                carsLane1.Add(new Car
+                                {
+                                    X = width / 2 + (roadWidth / 4) - carWidth / 2,
+                                    Y = height + carSpawnMargin,
+                                    Width = carWidth,
+                                    Height = carHeight,
+                                    Color = Color.Blue
+                                });
+                            }
                         }
                         if (random.Next(10) < spawnCarChance)
                         {
-                            l2Car++;
-                            carsLane2.Add(new Car
+                            numberOfCarsSpawned = random.Next(2) + 1;
+                            l2Car += numberOfCarsSpawned;
+                            for(int i=0;i<numberOfCarsSpawned;i++)
                             {
-                                X = -carSpawnMargin,
-                                Y = height / 2 + (roadWidth / 4) - carWidth / 2,
-                                Width = carHeight,
-                                Height = carWidth,
-                                Color = Color.Red
-                            });
+                                carsLane2.Add(new Car
+                                {
+                                    X = -carSpawnMargin,
+                                    Y = height / 2 + (roadWidth / 4) - carWidth / 2,
+                                    Width = carHeight,
+                                    Height = carWidth,
+                                    Color = Color.Red
+                                });
+                            }
                         }
 
                         if (l1Car > 0)
@@ -376,28 +385,36 @@ namespace FuzzyLogicTrafficLight
 
                         if (random.Next(10) < spawnCarChance)
                         {
-                            l1Car++;
                             // Spawn a vertical car at the bottom
-                            carsLane1.Add(new Car
+                            numberOfCarsSpawned = random.Next(2) + 1;
+                            l1Car += numberOfCarsSpawned; //Randomly spawns 1-2 cars
+                            for (int i = 0; i < numberOfCarsSpawned; i++)
                             {
-                                X = width / 2 + (roadWidth / 4) - 10,
-                                Y = height + carSpawnMargin,
-                                Width = 20,
-                                Height = 35,
-                                Color = Color.Blue
-                            });
+                                carsLane1.Add(new Car
+                                {
+                                    X = width / 2 + (roadWidth / 4) - carWidth / 2,
+                                    Y = height + carSpawnMargin,
+                                    Width = carWidth,
+                                    Height = carHeight,
+                                    Color = Color.Blue
+                                });
+                            }
                         }
                         if (random.Next(10) < spawnCarChance)
                         {
-                            l2Car++;
-                            carsLane2.Add(new Car
+                            numberOfCarsSpawned = random.Next(2) + 1;
+                            l2Car += numberOfCarsSpawned;
+                            for (int i = 0; i < numberOfCarsSpawned; i++)
                             {
-                                X = -carSpawnMargin,
-                                Y = height / 2 + (roadWidth / 4) - carWidth / 2,
-                                Width = carHeight,
-                                Height = carWidth,
-                                Color = Color.Red
-                            });
+                                carsLane2.Add(new Car
+                                {
+                                    X = -carSpawnMargin,
+                                    Y = height / 2 + (roadWidth / 4) - carWidth / 2,
+                                    Width = carHeight,
+                                    Height = carWidth,
+                                    Color = Color.Red
+                                });
+                            }
                         }
 
                         if (l2Car > 0)
@@ -429,6 +446,7 @@ namespace FuzzyLogicTrafficLight
         {
             startInputButton.Enabled = false;
             startRandomizedCarButton.Enabled = false;
+            setInputButton.Enabled = false;
 
             isL1Running = true;
             isL2Running = false;
@@ -446,17 +464,25 @@ namespace FuzzyLogicTrafficLight
                     SetL1WaitingTimeLabel(0);
 
                 }
-                else break;
+                else 
+                {
+                    await TransitionLanesAsync();
+                    isRunning = false;
+                    break;
+                }
 
                 await Task.Delay(500);
 
             }
+            
 
         }
 
         private void setInputButton_Click(object sender, EventArgs e)
         {
             isL1Running = false;
+
+            carsLane1.Clear();
 
             initialWaitingTime = Convert.ToDouble(waitingTimeInput.Value);
             initialCarsQueued = Convert.ToInt32(carsQueuedInput.Value);
@@ -510,19 +536,19 @@ namespace FuzzyLogicTrafficLight
 
         private void SetL1WaitingTimeLabel(double time)
         {
-            l1WaitingTimeLabel.Text = $"Waiting Time: {time:F2}s";
+            l1WaitingTimeLabel.Text = $"Waiting Time: {time:F0}s";
         }
         private void SetL2WaitingTimeLabel(double time)
         {
-            l2WaitingTimeLabel.Text = $"Waiting Time: {time:F2}s";
+            l2WaitingTimeLabel.Text = $"Waiting Time: {time:F0}s";
         }
         private void SetL1GoTimeLabel(double time)
         {
-            l1GoTimeLabel.Text = $"Go Time Remaining: {time:F2}s";
+            l1GoTimeLabel.Text = $"Go Time Remaining: {time:F0}s";
         }
         private void SetL2GoTimeLabel(double time)
         {
-            l2GoTimeLabel.Text = $"Go Time Remaining: {time:F2}s";
+            l2GoTimeLabel.Text = $"Go Time Remaining: {time:F0}s";
         }
         private void Setl1CarsWaitingLabel(int n)
         {
@@ -555,21 +581,21 @@ namespace FuzzyLogicTrafficLight
         {
             Console.Write($"wait:{waitingTime} | cars:{carQueue} : +");
 
-            double briefWaitingTime = TriangularMembership(waitingTime, 20, 35, 50); // 
-            double moderateWaitingTime = TriangularMembership(waitingTime, 40, 60, 80);
-            double prolongedWaitingTime = TriangularMembership(waitingTime, 75, 97.5, 120);
+            double briefWaitingTime = TriangularMembership(waitingTime, 10, 25, 40); 
+            double moderateWaitingTime = TriangularMembership(waitingTime, 30, 45, 60);
+            double prolongedWaitingTime = RightTrapezoidMembership(waitingTime, 50, 65);
 
-            double shortCarQueue = TriangularMembership(carQueue, 10, 15, 20);
-            double mediumCarQueue = TriangularMembership(carQueue, 18, 24, 30);
-            double longCarQueue = TriangularMembership(carQueue, 25, 35, 45);
+            double shortCarQueue = TriangularMembership(carQueue, 0, 7.5, 15);
+            double mediumCarQueue = TriangularMembership(carQueue, 10, 15, 20);
+            double longCarQueue = RightTrapezoidMembership(carQueue, 16, 22);
 
             double highRule = Math.Max(prolongedWaitingTime, longCarQueue);
-            double moderateRule = (moderateWaitingTime + mediumCarQueue) / 2;
+            double moderateRule = Math.Min(moderateWaitingTime, mediumCarQueue);
             double lowRule = Math.Min(briefWaitingTime, shortCarQueue);
 
-            double cShort = 10.0;
-            double cMedium = 15.0;
-            double cLong = 20.0;
+            double cShort = 15.0;
+            double cMedium = 20.0;
+            double cLong = 25.0;
             double numerator = (lowRule * cShort) + (moderateRule * cMedium) + (highRule * cLong);
             double denominator = highRule + moderateRule + lowRule;
             double centroid = 0.0;
@@ -591,6 +617,18 @@ namespace FuzzyLogicTrafficLight
                 return (x - a) / (b - a);
             return (c - x) / (c - b);
         }
+
+        private double RightTrapezoidMembership(double x, double a, double b)
+        {
+            if (x <= a)
+                return 0.0;
+            if (x >= b)
+                return 1.0;
+            
+            return (x - a) / (b - a);
+        }
+
+
     }
 
 }
