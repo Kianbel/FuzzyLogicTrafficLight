@@ -515,6 +515,7 @@ namespace FuzzyLogicTrafficLight
             isRunning = false;
             startRandomizedCarButton.Enabled = true;
             startInputButton.Enabled = true;
+            setInputButton.Enabled = true;
 
             l1CarsTotal = 0;
             l2CarsTotal = 0;
@@ -580,21 +581,21 @@ namespace FuzzyLogicTrafficLight
         {
             Console.Write($"wait:{waitingTime} | cars:{carQueue} : +");
 
-            double briefWaitingTime = TriangularMembership(waitingTime, 10, 25, 40); 
-            double moderateWaitingTime = TriangularMembership(waitingTime, 30, 45, 60);
-            double prolongedWaitingTime = RightTrapezoidMembership(waitingTime, 50, 65);
+            double briefWaitingTime = TriangularMembership(waitingTime, 0, 15, 30); 
+            double moderateWaitingTime = TriangularMembership(waitingTime, 18, 28, 38);
+            double prolongedWaitingTime = RightTrapezoidMembership(waitingTime, 30, 45);
 
-            double shortCarQueue = TriangularMembership(carQueue, 0, 7.5, 15);
-            double mediumCarQueue = TriangularMembership(carQueue, 10, 15, 20);
-            double longCarQueue = RightTrapezoidMembership(carQueue, 16, 22);
+            double shortCarQueue = TriangularMembership(carQueue, -3, 6, 15);
+            double mediumCarQueue = TriangularMembership(carQueue, 9, 14, 19);
+            double longCarQueue = RightTrapezoidMembership(carQueue, 15, 22);
 
             double highRule = Math.Max(prolongedWaitingTime, longCarQueue);
             double moderateRule = Math.Min(moderateWaitingTime, mediumCarQueue);
             double lowRule = Math.Min(briefWaitingTime, shortCarQueue);
-
-            double cShort = 15.0;
+            Console.WriteLine("High: " + highRule + " Moderate: " + moderateRule + " Low: " + lowRule);
+            double cShort = 10.0;
             double cMedium = 20.0;
-            double cLong = 25.0;
+            double cLong = 30.0;
             double numerator = (lowRule * cShort) + (moderateRule * cMedium) + (highRule * cLong);
             double denominator = highRule + moderateRule + lowRule;
             double centroid = 0.0;
