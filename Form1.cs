@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Drawing;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -13,6 +14,14 @@ namespace FuzzyLogicTrafficLight
     {
         Lane l1 = new Lane();
         Lane l2 = new Lane();
+        List<Car> carsLane1 = new List<Car>();
+        List<Car> carsLane2 = new List<Car>();
+        Timer animationTimer = new Timer();
+
+        int carWidth = 20;
+        int carHeight = 35;
+        int carSpawnMargin = 50;
+
         bool isRunning = false;
         bool isL1Running = true;
         bool isL2Running = false;
@@ -26,22 +35,21 @@ namespace FuzzyLogicTrafficLight
         double l1WaitingTime = 0.0;
         double l2WaitingTime = 0.0;
 
-        List<Car> carsLane1 = new List<Car>();
-        List<Car> carsLane2 = new List<Car>();
-        Timer animationTimer = new Timer();
-
-        int l1Car = 0;
-        int l2Car = 0;
+        int l1CarsTotal = 0;
+        int l2CarsTotal = 0;
 
         int l1CarsWaiting = 0;
         int l2CarsWaiting = 0;
         double standardTrafficLightTime = 15; // seconds
 
+        double initialWaitingTime;
+        int initialCarsQueued;
+
         public Form1()
         {
             InitializeComponent();
 
-            // Setup animation timer for c
+            // 60 FPS for screen drawing
             animationTimer.Interval = 16;
             animationTimer.Tick += AnimationTimer_Tick;
             animationTimer.Start();
@@ -247,7 +255,7 @@ namespace FuzzyLogicTrafficLight
             g.FillEllipse(l2RedColorBrush, red2);
             g.FillEllipse(l2GreenColorBrush, green2);
 
-            // --- DRAW CARS ---
+            // Draw cars on screen
             foreach (Car c in carsLane1) c.Draw(g);
             foreach (Car c in carsLane2) c.Draw(g);
         }
@@ -276,28 +284,23 @@ namespace FuzzyLogicTrafficLight
             isYellowLight = false;
         }
 
-        double initialWaitingTime;
-        int initialCarsQueued;
+        
 
         private async void button1_Click(object sender, EventArgs e)
         {
             startRandomizedCarButton.Enabled = false;
             startInputButton.Enabled = false;
 
-            l1Car = 6;
+            l1CarsTotal = 6;
             isL1Running = true;
             isL2Running = false;
-            double timeExtension = l1.GetTimeExtension(l1WaitingTime, l1Car); // seconds
+            double timeExtension = l1.GetTimeExtension(l1WaitingTime, l1CarsTotal); // seconds
 
             int timeCounter = 0;
             Random random = new Random();
             int width = pictureBox1.ClientSize.Width;
             int height = pictureBox1.ClientSize.Height;
             int roadWidth = 75;
-
-            int carWidth = 20;
-            int carHeight = 35;
-            int carSpawnMargin = 50;
 
             int spawnCarChance = 3;
             int numberOfCarsSpawned;
@@ -327,7 +330,7 @@ namespace FuzzyLogicTrafficLight
                         if (random.Next(10) < spawnCarChance)
                         {
                             numberOfCarsSpawned = random.Next(2) + 1;
-                            l1Car += numberOfCarsSpawned; //Randomly spawns 1-2 cars
+                            l1CarsTotal += numberOfCarsSpawned; //Randomly spawns 1-2 cars
                             for(int i=0;i<numberOfCarsSpawned; i++)
                             {
                                 carsLane1.Add(new Car
@@ -343,7 +346,7 @@ namespace FuzzyLogicTrafficLight
                         if (random.Next(10) < spawnCarChance)
                         {
                             numberOfCarsSpawned = random.Next(2) + 1;
-                            l2Car += numberOfCarsSpawned;
+                            l2CarsTotal += numberOfCarsSpawned;
                             for(int i=0;i<numberOfCarsSpawned;i++)
                             {
                                 carsLane2.Add(new Car
@@ -357,9 +360,9 @@ namespace FuzzyLogicTrafficLight
                             }
                         }
 
-                        if (l1Car > 0)
+                        if (l1CarsTotal > 0)
                         {
-                            if (timeCounter % 2 == 0) l1Car--;
+                            if (timeCounter % 2 == 0) l1CarsTotal--;
                         }
                     }
                     else
@@ -387,7 +390,7 @@ namespace FuzzyLogicTrafficLight
                         {
                             // Spawn a vertical car at the bottom
                             numberOfCarsSpawned = random.Next(2) + 1;
-                            l1Car += numberOfCarsSpawned; //Randomly spawns 1-2 cars
+                            l1CarsTotal += numberOfCarsSpawned; //Randomly spawns 1-2 cars
                             for (int i = 0; i < numberOfCarsSpawned; i++)
                             {
                                 carsLane1.Add(new Car
@@ -403,7 +406,7 @@ namespace FuzzyLogicTrafficLight
                         if (random.Next(10) < spawnCarChance)
                         {
                             numberOfCarsSpawned = random.Next(2) + 1;
-                            l2Car += numberOfCarsSpawned;
+                            l2CarsTotal += numberOfCarsSpawned;
                             for (int i = 0; i < numberOfCarsSpawned; i++)
                             {
                                 carsLane2.Add(new Car
@@ -417,9 +420,9 @@ namespace FuzzyLogicTrafficLight
                             }
                         }
 
-                        if (l2Car > 0)
+                        if (l2CarsTotal > 0)
                         {
-                            if (timeCounter % 2 == 0) l2Car--;
+                            if (timeCounter % 2 == 0) l2CarsTotal--;
                         }
                     }
                     else
@@ -496,10 +499,6 @@ namespace FuzzyLogicTrafficLight
                 int height = pictureBox1.ClientSize.Height;
                 int roadWidth = 75;
 
-                int carWidth = 20;
-                int carHeight = 35;
-                int carSpawnMargin = 50;
-
                 carsLane1.Add(new Car
                 {
                     X = width / 2 + (roadWidth / 4) - carWidth / 2,
@@ -517,8 +516,8 @@ namespace FuzzyLogicTrafficLight
             startRandomizedCarButton.Enabled = true;
             startInputButton.Enabled = true;
 
-            l1Car = 0;
-            l2Car = 0;
+            l1CarsTotal = 0;
+            l2CarsTotal = 0;
 
             carsLane1.Clear();
             carsLane2.Clear();
@@ -603,7 +602,7 @@ namespace FuzzyLogicTrafficLight
             {
                 centroid = numerator / denominator;
             }
-            Console.Write(centroid + $" {centroid + 15}\n------------------\n");
+            Console.Write($"centroid: {centroid} | total time: {centroid + 15}\n------------------\n");
             return centroid;
         }
 
